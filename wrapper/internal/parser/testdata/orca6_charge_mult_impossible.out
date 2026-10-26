@@ -1,0 +1,22 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+Atom  30H    basis set group =>   4
+Atom  31H    basis set group =>   4
+Atom  32H    basis set group =>   4
+[file orca_main/main_util_tools.cpp, line 749]: Error : multiplicity (1) is odd and number of electrons (143) is odd -> impossible

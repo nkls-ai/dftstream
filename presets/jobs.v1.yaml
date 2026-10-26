@@ -1,0 +1,132 @@
+# Job types offered by the input builder.
+#
+# `id` must match a wrapper/internal/inputbuild.JobType constant, and
+# `keywords` must match that constant's Keywords() — the Go generators
+# and the browser builder have to emit the same '!' line for the same
+# job. jobs.test.ts guards the vocabulary on the TypeScript side.
+version: 1
+kind: dftstream.job-types
+
+jobs:
+  - id: sp
+    label: Single point
+    keywords: []
+    description: >-
+      Energy at a fixed geometry. ORCA's default when no run keyword is
+      present, which is why this job contributes none.
+    needsFrequencies: false
+
+  - id: opt
+    label: Optimization
+    keywords: [Opt]
+    description: Relax the structure to the nearest minimum.
+    needsFrequencies: false
+
+  - id: opt-freq
+    label: Optimization + frequencies
+    keywords: [Opt, Freq]
+    description: >-
+      Relax to a minimum and verify it with a Hessian. The combination
+      that makes a thermochemistry-grade structure — and the only one
+      that proves the minimum is real (no imaginary modes).
+    needsFrequencies: true
+
+  - id: freq
+    label: Frequencies
+    keywords: [Freq]
+    description: Hessian at a fixed geometry, for thermochemistry or IR.
+    needsFrequencies: true
+
+  - id: opt-ts
+    label: TS search
+    keywords: [OptTS]
+    description: >-
+      Saddle-point search from a TS guess. Wants a Hessian to start from
+      (%geom Calc_Hess, or an inherited .hess).
+    needsFrequencies: false
+
+  - id: opt-ts-freq
+    label: TS search + frequencies
+    keywords: [OptTS, Freq]
+    description: >-
+      Saddle-point search verified by frequencies — exactly one
+      imaginary mode is the success condition.
+    needsFrequencies: true
+
+  - id: neb-ts
+    label: NEB-TS
+    keywords: [NEB-TS]
+    description: >-
+      Nudged-elastic-band TS search between two optimized endpoints.
+      Needs a %neb block naming the product .xyz.
+    needsFrequencies: false
+    needsEndpoint: true
+
+  - id: neb-ts-freq
+    label: NEB-TS + frequencies
+    keywords: [NEB-TS, Freq]
+    description: NEB-TS whose saddle point is verified by frequencies.
+    needsFrequencies: true
+    needsEndpoint: true
+
+  - id: irc
+    label: IRC
+    keywords: [IRC]
+    description: >-
+      Follow the intrinsic reaction coordinate downhill from a validated
+      TS, in both directions.
+    needsFrequencies: false
+
+  - id: scan
+    label: Relaxed scan
+    keywords: [Opt]
+    description: >-
+      Drive one internal coordinate (bond, angle or dihedral) through a
+      range, optimizing everything else at each point. The scan itself
+      lives in the %geom Scan block; the run keyword is a plain Opt.
+    needsFrequencies: false
+    needsScan: true
+
+  - id: tddft
+    label: TD-DFT absorption
+    keywords: []
+    description: >-
+      Excited states / UV-Vis absorption at a fixed geometry. Requested
+      through the %tddft block (number of roots, triplets) — no run
+      keyword, so ORCA treats the ground state as a single point.
+    needsFrequencies: false
+    needsTddft: true
+
+  - id: nmr
+    label: NMR shieldings
+    keywords: [NMR]
+    description: >-
+      GIAO NMR chemical shieldings at a fixed geometry. Shieldings are
+      basis-hungry — use at least a triple-zeta basis (def2-TZVP or a
+      pcSseg set); a composite's small internal basis is not enough.
+    needsFrequencies: false
+
+  - id: mecp
+    label: MECP search
+    keywords: [MECP]
+    description: >-
+      Minimum-energy crossing point between two spin surfaces. The input's
+      own multiplicity is state 1; the %mecp block names state 2.
+    needsFrequencies: false
+    needsMecp: true
+
+  - id: goat
+    label: GOAT conformer search
+    keywords: [GOAT]
+    description: >-
+      Global optimizer: samples the conformer ensemble. Cheap methods
+      (xTB) only — it runs thousands of structures.
+    needsFrequencies: false
+
+  - id: goat-entropy
+    label: GOAT + conformational entropy
+    keywords: [GOAT-Entropy]
+    description: >-
+      GOAT with the ensemble entropy protocol, for the conformational
+      contribution to a free energy.
+    needsFrequencies: false

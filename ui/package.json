@@ -1,0 +1,32 @@
+{
+  "name": "bun-react-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --splitting --public-path=/ --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
+    "start": "NODE_ENV=production bun src/index.ts",
+    "test": "bun test",
+    "typecheck": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "3dmol": "^2.5.4",
+    "@clerk/react": "^6.17.2",
+    "@convex-dev/auth": "^0.0.95",
+    "convex": "^1.46.0",
+    "fzstd": "^0.1.1",
+    "openchemlib": "^9.24.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-router-dom": "^7.15.1",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.184.1",
+    "typescript": "^5.9.3"
+  }
+}

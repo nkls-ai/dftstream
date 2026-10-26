@@ -1,0 +1,11 @@
+=== file: min_sp.inp ===
+# dftstream: edge=sp parent="goldenexp/min"
+! DLPNO-CCSD(T) cc-pVTZ cc-pVTZ/C TightSCF CPCM(water)
+%maxcore 4000
+* xyz 0 1
+C       0.00000000     0.00000000     0.01000000
+N       0.00000000     0.00000000     1.17000000
+H       0.00000000     0.00000000    -1.06000000
+*
+=== end ===
+=== warning: carried the parent's solvent model over: CPCM(water)

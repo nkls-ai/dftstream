@@ -1,0 +1,18 @@
+! GOAT-Entropy xTB2 ALPB(DMSO) 
+
+%maxcore 3000
+
+%pal 
+    nprocs 8
+end 
+
+%goat 
+    maxen 10.0 
+    endiff 0.2 
+    rmsd 0.15 
+    freezecistrans true 
+    confdegen auto 
+end 
+
+* xyzfile 0 1 start_ma1.xyz 
+

@@ -1,0 +1,13 @@
+! wB97X-V def2-QZVPP SMD(Acetonitrile) TightSCF
+
+%maxcore 6000
+
+%pal
+    nprocs 8
+end
+
+%scf
+    BrokenSym 1,1
+end
+
+* xyzfile 0 1 opt-freq_b1-oss_r2scan3c.xyz

@@ -1,0 +1,18 @@
+=== file: irc_irc_f_opt.inp ===
+# dftstream: edge=endpoint-opt parent="goldenexp/irc"
+! XTB Opt Freq
+* xyz 0 1
+C       0.00000000     0.00000000     0.50000000
+N       0.00000000     0.00000000     1.50000000
+H       0.00000000     0.00000000    -0.50000000
+*
+=== end ===
+=== file: irc_irc_b_opt.inp ===
+# dftstream: edge=endpoint-opt parent="goldenexp/irc"
+! XTB Opt Freq
+* xyz 0 1
+C       0.00000000     0.00000000     0.50000000
+N       0.00000000     0.00000000     1.50000000
+H       0.00000000     0.00000000    -0.50000000
+*
+=== end ===

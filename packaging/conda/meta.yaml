@@ -1,0 +1,57 @@
+# conda-forge recipe skeleton for dftstream.
+#
+# STATUS: NOT SUBMITTED to conda-forge, and not currently submittable:
+#
+#   1. The license is MIT (OSI-approved), but conda-forge needs a public
+#      source URL; submission waits until the repository is public
+#      (see packaging/README.md).
+#   2. The Go binary embeds the web UI via go:embed from
+#      wrapper/internal/uiserver/dist/. A plain source tarball does not
+#      contain that bundle, and building it needs bun, which conda-forge
+#      does not provide. The plan is to attach a `-vendored` source
+#      tarball to each release that includes the prebuilt dist/ (pure
+#      static assets, no compilation), and point this recipe at it.
+#
+# Placeholders to fill at submission time are marked FIXME.
+
+{% set name = "dftstream" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  # FIXME: must be the vendored tarball (includes wrapper/internal/
+  # uiserver/dist/), not the auto-generated GitHub archive — see header.
+  url: https://github.com/nkls-ai/dftstream/releases/download/v{{ version }}/dftstream-{{ version }}-vendored.tar.gz
+  sha256: 0000000000000000000000000000000000000000000000000000000000000000  # FIXME
+
+build:
+  number: 0
+  # Windows is best-effort upstream (see packaging/README.md); start
+  # with unix only and add win once someone actually tests it.
+  skip: true  # [win]
+  script:
+    - cd wrapper
+    - go build -trimpath -ldflags "-s -w -X github.com/nkls-ai/dftstream/internal/version.Version={{ version }}" -o $PREFIX/bin/dftstream ./cmd/dftstream
+
+requirements:
+  build:
+    # go-nocgo: the binary is CGO_ENABLED=0, same as the release builds.
+    - {{ compiler('go-nocgo') }}
+
+test:
+  commands:
+    - dftstream version
+    - dftstream --help
+
+about:
+  home: https://github.com/nkls-ai/dftstream
+  summary: Run wrapper and live tracker for ORCA quantum chemistry jobs
+  license: MIT
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - nkls-ai  # FIXME: confirm maintainer GitHub handles

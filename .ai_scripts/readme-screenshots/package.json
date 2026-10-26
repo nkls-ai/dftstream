@@ -1,0 +1,10 @@
+{
+  "name": "readme-screenshots",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "gifenc": "^1.0.3",
+    "playwright-core": "^1.63.0",
+    "sharp": "^0.35.5"
+  }
+}

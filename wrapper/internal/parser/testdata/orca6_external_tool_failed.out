@@ -1,0 +1,39 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+                        ----------------------------
+                                    D-I-I-S
+                        ----------------------------
+  Iteration    Energy (Eh)           Delta-E    RMSDP     MaxDP     DIISErr   Damp  Time(sec)
+    1    -75.9500000000000000     0.00e+00  3.77e-03  7.50e-02  1.45e-01  0.700   2.1
+    2    -75.9550000000000000    -5.00e-03  1.20e-03  2.10e-02  4.50e-02  0.700   2.0
+
+               *****************************************************
+               *                     SUCCESS                       *
+               *           SCF CONVERGED AFTER  10 CYCLES          *
+               *****************************************************
+
+FINAL SINGLE POINT ENERGY      -75.955000000000
+
+ORCA finished by error termination in CIS
+Calling Command: mpirun -np 8 --bind-to none /opt/orca/orca_cis_mpi job.cisinp.tmp job
+[file orca_tools/qcmsg.cpp, line 394]: 
+  .... aborting the run
+
+                             ****ORCA TERMINATED NORMALLY****
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 12 seconds 500 msec

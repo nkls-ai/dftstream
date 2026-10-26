@@ -1,0 +1,13 @@
+! UKS r2SCAN-3c OptTS Freq CPCM(DMSO) TightSCF 
+
+%maxcore 6000
+
+%pal
+    nprocs 8
+end
+
+%geom
+    calc_hess True
+end
+
+* xyzfile 0 2 surfscan_ma2-r1_r2scan3c_2.009.xyz

@@ -1,0 +1,28 @@
+{
+  "name": "db",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "printf 'n\\n' | CONVEX_DEPLOYMENT=anonymous:anonymous-db CONVEX_URL=http://127.0.0.1:3210 CONVEX_SITE_URL=http://127.0.0.1:3211 CLERK_JWT_ISSUER_DOMAIN=https://placeholder.local DFTSTREAM_AUTH_REQUIRED=0 TZ=UTC CONVEX_TMPDIR=$PWD/.convex/tmp CONVEX_LOCAL_BACKEND_STARTUP_TIMEOUT_SECS=${CONVEX_LOCAL_BACKEND_STARTUP_TIMEOUT_SECS:-240} convex dev",
+    "openapi": "convex-helpers open-api-spec",
+    "typecheck": "bunx tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@types/bun": "latest",
+    "convex-test": "^0.0.60",
+    "vitest": "^4.1.8"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@auth/core": "0.41.3",
+    "@convex-dev/auth": "^0.0.95",
+    "convex": "^1.46.0",
+    "convex-helpers": "^0.1.124",
+    "jose": "^6.2.12"
+  }
+}

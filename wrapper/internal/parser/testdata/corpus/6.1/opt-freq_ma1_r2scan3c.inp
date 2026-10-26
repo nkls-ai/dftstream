@@ -1,0 +1,10 @@
+! r2SCAN-3c TightOpt Freq CPCM(DMSO) TightSCF
+
+%maxcore 3000 
+
+%pal 
+    nprocs 8 
+end 
+
+* xyzfile 0 1 goat_ma1_xtb.globalminimum.xyz 
+

@@ -1,0 +1,4 @@
+node_modules
+.convex
+convex-local-backend.log
+node_modules.bak

@@ -1,0 +1,10 @@
+=== file: gas_sp.inp ===
+# dftstream: edge=sp parent="goldenexp/gas"
+! wB97X-V def2-QZVPP VeryTightSCF DEFGRID3
+%pal nprocs 2 end
+* xyz 0 3
+C       0.00000000     0.00000000     0.01000000
+N       0.00000000     0.00000000     1.17000000
+H       0.00000000     0.00000000    -1.06000000
+*
+=== end ===

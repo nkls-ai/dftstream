@@ -1,0 +1,23 @@
+=== file: r_neb-ts.inp ===
+# dftstream: edge=neb-ts parent="goldenexp/r"
+! r2SCAN-3c CPCM(water) NEB-TS Freq
+%neb
+  NEB_End_XYZFile "r_neb-ts_product.xyz"
+  Nimages 8
+end
+* xyzfile -1 2 r_neb-ts_reactant.xyz
+=== end ===
+=== file: r_neb-ts_reactant.xyz ===
+3
+reactant endpoint, from r.out
+C       0.00000000     0.00000000     0.01000000
+N       0.00000000     0.00000000     1.17000000
+H       0.00000000     0.00000000    -1.06000000
+=== end ===
+=== file: r_neb-ts_product.xyz ===
+3
+product endpoint, from p.out
+C       0.00000000     0.00000000     0.01000000
+N       0.00000000     0.00000000     1.17000000
+H       0.00000000     0.00000000    -1.06000000
+=== end ===

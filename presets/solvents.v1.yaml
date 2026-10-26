@@ -1,0 +1,112 @@
+# Implicit-solvation models and the solvent names each one accepts.
+#
+# `keyword` is spelled exactly as it goes on the '!' line: the builder
+# emits `KEYWORD(solvent)`. `methodFamilies` limits a model to the
+# methods it is defined for — ALPB is xTB's own model and means nothing
+# to a DFT run, and offering it there produces an input ORCA rejects.
+#
+# The solvent names are ORCA's own; anything not in these lists must be
+# parameterized by hand in a %cpcm block, which the builder leaves to the
+# advanced override panel.
+version: 1
+kind: dftstream.solvent-models
+
+models:
+  - id: cpcm
+    keyword: CPCM
+    label: CPCM
+    description: >-
+      Conductor-like polarizable continuum. The default for geometry work
+      and the cheapest correct answer for a bulk-solvent effect.
+    methodFamilies: [dft, composite, wavefunction]
+    solvents:
+      - Water
+      - Acetonitrile
+      - Acetone
+      - Ammonia
+      - Aniline
+      - Benzene
+      - CCl4
+      - CH2Cl2
+      - Chlorobenzene
+      - Chloroform
+      - Cyclohexane
+      - DMF
+      - DMSO
+      - Dioxane
+      - Ethanol
+      - Ether
+      - Heptane
+      - Hexane
+      - Methanol
+      - Nitromethane
+      - Octanol
+      - Pyridine
+      - THF
+      - Toluene
+
+  - id: smd
+    keyword: SMD
+    label: SMD
+    description: >-
+      Truhlar's model on top of CPCM, parameterized against free energies
+      of solvation. Use it when the number you want IS a solvation free
+      energy; CPCM is the better default for geometries.
+    methodFamilies: [dft, composite, wavefunction]
+    solvents:
+      - Water
+      - Acetonitrile
+      - Acetone
+      - Aniline
+      - Benzene
+      - CarbonTetrachloride
+      - Chlorobenzene
+      - Chloroform
+      - Cyclohexane
+      - Dichloromethane
+      - DMF
+      - DMSO
+      - 1,4-Dioxane
+      - Ethanol
+      - DiethylEther
+      - Heptane
+      - Hexane
+      - Methanol
+      - Nitromethane
+      - 1-Octanol
+      - Pyridine
+      - THF
+      - Toluene
+
+  - id: alpb
+    keyword: ALPB
+    label: ALPB (xTB only)
+    description: >-
+      Analytical linearized Poisson-Boltzmann — the solvation model that
+      comes with the GFNn-xTB methods. Only valid for xTB runs.
+    methodFamilies: [semiempirical]
+    solvents:
+      - water
+      - acetone
+      - acetonitrile
+      - aniline
+      - benzene
+      - ch2cl2
+      - chcl3
+      - cs2
+      - dioxane
+      - dmf
+      - dmso
+      - ether
+      - ethanol
+      - ethylacetate
+      - furane
+      - hexadecane
+      - hexane
+      - methanol
+      - nitromethane
+      - octanol
+      - phenol
+      - thf
+      - toluene
+      - woctanol

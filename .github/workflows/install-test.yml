@@ -1,0 +1,62 @@
+# Install-script smoke test. Runs `scripts/install.sh` end-to-end against
+# the current working tree (using --method source so it doesn't depend on
+# a published release), then verifies that the installed `dftstream`,
+# `dftstream-db`, embedded UI bundle, and a fake-ORCA wrapper run all
+# work together.
+#
+# Mirror of what `tests/install/run.sh` does in a local docker container
+# on a developer machine — same test.sh, different host.
+name: Install test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: install-test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install-from-source:
+    name: install.sh (source build) on ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: wrapper/go.mod
+          cache-dependency-path: wrapper/go.sum
+
+      # Bun is installed by the install script itself via --install-bun,
+      # so we deliberately don't preinstall it here — the goal is to
+      # exercise the script's bootstrap path.
+
+      - name: Run install + smoke test
+        # We deliberately leave DFTSTREAM_TEST_REPO unset so that
+        # tests/install/test.sh stages its own bare clone of the
+        # checkout with the right upload-pack config (allowFilter,
+        # allowReachableSHA1InWant). Cloning straight from the runner's
+        # workspace .git misses those toggles and produces warning spam
+        # plus failing fetches when install.sh asks for a commit SHA.
+        run: bash tests/install/test.sh
+
+      - name: Upload sandbox logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-test-logs
+          path: |
+            /tmp/dftstream-install-*/db.log
+            /tmp/dftstream-install-*/ui.log
+            /tmp/dftstream-install-*/h2.stderr
+            /tmp/dftstream-install-*/h2.stdout
+          if-no-files-found: ignore

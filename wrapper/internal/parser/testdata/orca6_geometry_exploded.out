@@ -1,0 +1,29 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+                        ORCA OPTIMIZATION COORDINATE SETUP
+------------------------------------------------------------------------------
+The optimization will be done in redundant internal coordinates (2022)
+Making redundant internal coordinates   ...  (188 redundants) done
+
+*************************************************************
+*                GEOMETRY OPTIMIZATION CYCLE  27             *
+*************************************************************
+
+Error (ORCA/GeometryOptimization): failed to convert Cartesian to internal coordinates.
+[file orca_main/run.cpp, line 1547]: ORCA finished with error return - aborting the run

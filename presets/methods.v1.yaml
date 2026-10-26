@@ -1,0 +1,100 @@
+# Method presets for the input builder.
+#
+# `keywords` carries method / basis / accuracy tokens ONLY — never a run
+# keyword (Opt, Freq, OptTS, NEB-TS, IRC, GOAT…). The job type owns
+# those, so any preset can be combined with any job it supports.
+#
+# `optTier` is the exception that earns its own field: TightOpt and
+# friends are ORCA run keywords (they imply Opt on their own), so the
+# builder substitutes the tier for the job's plain `Opt` instead of
+# emitting both.
+#
+# `observed` is the number of times the preset's keyword line was found
+# in this lab's ~1,600 archived ORCA inputs — measured, not guessed. It
+# is omitted where no count was measured; never invent one.
+version: 1
+kind: dftstream.method-presets
+
+presets:
+  - id: r2scan-3c
+    label: r2SCAN-3c
+    family: composite
+    keywords: [r2SCAN-3c]
+    defaultJob: opt-freq
+    jobs: [opt, opt-freq, freq, opt-ts, opt-ts-freq, neb-ts, neb-ts-freq, irc, scan, mecp, sp]
+    observed: 241
+    description: >-
+      The house workhorse. Composite meta-GGA with its own basis and
+      corrections baked in — nothing to choose, hard to misuse, good
+      geometries and frequencies at a fraction of a def2-TZVP hybrid.
+      Start here unless you know why not.
+
+  - id: wb97x-d4-tzvp
+    label: wB97X-D4 / def2-TZVP
+    family: dft
+    keywords: [wB97X-D4, def2-TZVP, TightSCF, DEFGRID3]
+    defaultJob: sp
+    jobs: [sp, opt, opt-freq, freq, opt-ts, opt-ts-freq, irc, tddft, nmr]
+    observed: 224
+    description: >-
+      Range-separated hybrid with the D4 dispersion correction on a
+      triple-zeta basis, tight SCF and the dense integration grid. The
+      standard energy refinement on r2SCAN-3c geometries.
+
+  - id: wb97x-d3-tzvp-opt
+    label: wB97X-D3 / def2-TZVP (TightOpt)
+    family: dft
+    keywords: [wB97X-D3, def2-TZVP]
+    optTier: TightOpt
+    defaultJob: opt-freq
+    jobs: [opt, opt-freq, freq, opt-ts, opt-ts-freq, neb-ts, neb-ts-freq, irc, scan, mecp]
+    defaultSolventModel: cpcm
+    observed: 189
+    description: >-
+      The solvated optimization line: hybrid + D3 on def2-TZVP with tight
+      optimization criteria, normally with a CPCM solvent. Tight criteria
+      matter here — loose minima produce spurious low frequencies that
+      wreck the entropy term.
+
+  - id: wb97x-v-qzvpp
+    label: wB97X-V / def2-QZVPP
+    family: dft
+    keywords: [wB97X-V, def2-QZVPP, TightSCF, DEFGRID3]
+    defaultJob: sp
+    jobs: [sp]
+    description: >-
+      Quadruple-zeta single point with the non-local VV10 correlation
+      functional. Final energies only — never optimize with this.
+
+  - id: b97-3c
+    label: B97-3c
+    family: composite
+    keywords: [B97-3c]
+    defaultJob: opt-freq
+    jobs: [opt, opt-freq, freq, opt-ts, opt-ts-freq, neb-ts, neb-ts-freq, irc, scan, mecp, sp]
+    description: >-
+      Cheaper composite than r2SCAN-3c: a fast pre-optimization or a
+      first pass on a large system before the real method.
+
+  - id: xtb2-goat
+    label: GFN2-xTB (GOAT ensemble)
+    family: semiempirical
+    keywords: [XTB2]
+    defaultJob: goat-entropy
+    jobs: [goat, goat-entropy, opt, opt-freq, scan, sp]
+    defaultSolventModel: alpb
+    description: >-
+      Tight-binding, seconds per structure — the only sane level for a
+      conformer search. ALPB is xTB's own solvation model; CPCM/SMD do
+      not apply here.
+
+  - id: dlpno-ccsdt-tz
+    label: DLPNO-CCSD(T) / cc-pVTZ
+    family: wavefunction
+    keywords: [DLPNO-CCSD(T), cc-pVTZ, cc-pVTZ/C, TightSCF]
+    defaultJob: sp
+    jobs: [sp]
+    description: >-
+      Coupled-cluster refinement on a DFT geometry — the reference
+      number a barrier gets judged by. Single points only, and mind the
+      memory: the auxiliary basis is what makes DLPNO affordable.

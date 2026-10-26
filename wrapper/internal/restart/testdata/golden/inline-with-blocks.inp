@@ -1,0 +1,13 @@
+! wB97X-D4 def2-TZVP OptTS Freq
+%pal nprocs 4 end
+%geom
+  Calc_Hess true
+end
+%scf
+  MaxIter 300
+end
+* xyz 1 2
+C       0.00000000     0.00000000     0.00000000
+N      -0.50000000     1.25000000     1.16000000
+H       0.00000000     0.00000000    -1.07000000
+*

@@ -1,0 +1,7 @@
+! XTB2 IRC
+%irc
+  MaxIter 30
+  Calc_Hess true
+  Direction both
+end
+* xyzfile 0 1 ts_guess.xyz

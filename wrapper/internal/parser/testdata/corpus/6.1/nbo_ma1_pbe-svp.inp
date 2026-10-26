@@ -1,0 +1,10 @@
+! NBO PBE def2-SV(P) CPCM(DMSO) TightSCF
+
+%maxcore 6000 
+
+%pal 
+    nprocs 8 
+end 
+
+* xyzfile 0 1 opt-freq_ma1_r2scan3c.xyz
+

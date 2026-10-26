@@ -1,0 +1,20 @@
+services:
+  convex:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "16767:16767"
+      - "16768:16768"
+    volumes:
+      - convex-data:/convex/data
+      - ./state:/convex/state
+    environment:
+      - CONVEX_PORT=16767
+      - CONVEX_SITE_PORT=16768
+      - CONVEX_INSTANCE_NAME=dftstream
+    restart: unless-stopped
+
+volumes:
+  convex-data:
+    name: dftstream-convex-data

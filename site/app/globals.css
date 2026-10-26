@@ -1,0 +1,437 @@
+@import "tailwindcss";
+
+/* DFTStream site theme.
+
+   The tokens below are lifted from the product's own stylesheet
+   (ui/src/index.css) so the marketing site and the app are visibly the
+   same piece of software: neutral dark surfaces, a single blue accent,
+   Inter for prose, JetBrains Mono for anything that is data.
+
+   Tailwind v4 `@theme` names must be static, so the light theme is
+   applied by re-declaring the same CSS variables under
+   `prefers-color-scheme: light` — exactly the trick the app uses with
+   `html[data-theme="light"]`. Every colour below is a var, so one block
+   flips the whole site. */
+@theme {
+  --color-bg: var(--os-bg);
+  --color-surface: var(--os-bg-surface);
+  --color-elevated: var(--os-bg-elevated);
+  --color-sidebar: var(--os-sidebar-bg);
+  --color-line: var(--os-border);
+  --color-line-soft: var(--os-border-light);
+  --color-text: var(--os-text);
+  --color-muted: var(--os-text-muted);
+  --color-faint: var(--os-text-faint);
+  --color-accent: var(--os-accent);
+  --color-accent-soft: var(--os-accent-secondary);
+  --color-ok: var(--os-ok);
+  --color-warn: var(--os-warn);
+  --color-danger: var(--os-danger);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "SF Mono", Menlo, Consolas, ui-monospace, monospace;
+}
+
+:root {
+  /* Dark — the app's default surface palette, verbatim. */
+  --os-bg: #1e1f22;
+  --os-bg-surface: #25262a;
+  --os-bg-elevated: #2b2d31;
+  --os-sidebar-bg: #1a1b1e;
+  --os-border: #3c3e44;
+  --os-border-light: rgba(255, 255, 255, 0.07);
+  --os-card-bg: rgba(255, 255, 255, 0.03);
+  --os-card-bg-deep: rgba(0, 0, 0, 0.15);
+  --os-table-head-bg: rgba(255, 255, 255, 0.05);
+  --os-hover-wash: rgba(255, 255, 255, 0.04);
+
+  --os-accent-rgb: 59, 158, 255;
+  --os-accent: rgb(var(--os-accent-rgb));
+  --os-accent-secondary: #7ec8ff;
+
+  --os-text: #d4d7de;
+  --os-text-muted: #9399a4;
+  --os-text-faint: #6c727e;
+
+  --os-ok-rgb: 52, 211, 153;
+  --os-ok: rgb(var(--os-ok-rgb));
+  --os-warn-rgb: 251, 191, 36;
+  --os-warn: rgb(var(--os-warn-rgb));
+  --os-danger-rgb: 248, 113, 113;
+  --os-danger: rgb(var(--os-danger-rgb));
+
+  --os-shadow: rgba(0, 0, 0, 0.28);
+
+  color-scheme: dark light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Light — the app's `html[data-theme="light"]` block, verbatim. */
+    --os-bg: #f5f7fa;
+    --os-bg-surface: #ffffff;
+    --os-bg-elevated: #edf1f7;
+    --os-sidebar-bg: #ffffff;
+    --os-border: #d0d9e4;
+    --os-border-light: rgba(0, 0, 0, 0.06);
+    --os-card-bg: rgba(255, 255, 255, 0.9);
+    --os-card-bg-deep: #f8fafc;
+    --os-table-head-bg: #edf1f7;
+    --os-hover-wash: rgba(0, 0, 0, 0.04);
+
+    --os-accent-rgb: 29, 125, 202;
+    --os-accent-secondary: #0c6ab0;
+
+    --os-text: #1a2332;
+    --os-text-muted: #526580;
+    --os-text-faint: #8096ad;
+
+    --os-ok-rgb: 22, 163, 74;
+    --os-warn-rgb: 217, 119, 6;
+    --os-danger-rgb: 220, 38, 38;
+
+    --os-shadow: rgba(15, 23, 42, 0.12);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  /* The app paints the same wash: a faint accent glow at the top-left
+     over a vertical fade into the sidebar tone. */
+  background-color: var(--os-bg);
+  background-image:
+    radial-gradient(circle at 8% -10%, rgba(var(--os-accent-rgb), 0.06), transparent 42%),
+    linear-gradient(180deg, var(--os-bg) 0%, var(--os-sidebar-bg) 100%);
+  background-attachment: fixed;
+  color: var(--os-text);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv11", "tnum";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- shared product-idiom primitives ---------- */
+
+/* .card in the app: a low-alpha wash on the page ground, hairline
+   border, 10px radius, border lights up on hover. */
+.os-card {
+  background: var(--os-card-bg);
+  border: 1px solid var(--os-border-light);
+  border-radius: 10px;
+}
+
+.os-panel {
+  background: var(--os-bg-surface);
+  border: 1px solid var(--os-border);
+  border-radius: 10px;
+}
+
+.os-sunken {
+  background: var(--os-card-bg-deep);
+  border: 1px solid var(--os-border-light);
+  border-radius: 8px;
+}
+
+/* Section label — the app's `.card h3` / `.meta-grid .label` idiom. */
+.os-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--os-text-faint);
+}
+
+/* Status pill, verbatim shape from the app. */
+.os-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+.os-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.os-pill-ok {
+  background: rgba(var(--os-ok-rgb), 0.12);
+  color: var(--os-ok);
+  border-color: rgba(var(--os-ok-rgb), 0.3);
+}
+.os-pill-ok .dot { background: var(--os-ok); }
+.os-pill-warn {
+  background: rgba(var(--os-warn-rgb), 0.12);
+  color: var(--os-warn);
+  border-color: rgba(var(--os-warn-rgb), 0.3);
+}
+.os-pill-warn .dot { background: var(--os-warn); }
+.os-pill-danger {
+  background: rgba(var(--os-danger-rgb), 0.12);
+  color: var(--os-danger);
+  border-color: rgba(var(--os-danger-rgb), 0.3);
+}
+.os-pill-danger .dot { background: var(--os-danger); }
+.os-pill-accent {
+  background: rgba(var(--os-accent-rgb), 0.12);
+  color: var(--os-accent);
+  border-color: rgba(var(--os-accent-rgb), 0.3);
+}
+.os-pill-accent .dot { background: var(--os-accent); }
+
+/* Verdict strip — the app's `.verdict`: 4px tinted left rule over a
+   gradient that fades out by mid-width. */
+.os-verdict {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--os-border);
+  border-left-width: 4px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.os-verdict-ok {
+  border-left-color: var(--os-ok);
+  background: linear-gradient(90deg, rgba(var(--os-ok-rgb), 0.1), transparent 55%);
+  color: var(--os-ok);
+}
+.os-verdict-warn {
+  border-left-color: var(--os-warn);
+  background: linear-gradient(90deg, rgba(var(--os-warn-rgb), 0.1), transparent 55%);
+  color: var(--os-warn);
+}
+.os-verdict-danger {
+  border-left-color: var(--os-danger);
+  background: linear-gradient(90deg, rgba(var(--os-danger-rgb), 0.14), transparent 55%);
+  color: var(--os-danger);
+}
+
+/* Table — the app's `.table`: sunken ground, uppercase mono-ish head,
+   hairline row rules, hover wash. */
+.os-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+.os-table th,
+.os-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--os-border-light);
+}
+.os-table tr:last-child td {
+  border-bottom: none;
+}
+.os-table th {
+  background: var(--os-table-head-bg);
+  color: var(--os-text-muted);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.os-table tbody tr:hover {
+  background: var(--os-hover-wash);
+}
+.os-table .num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- motion: one orchestrated page load, nothing looping ---------- */
+
+@keyframes os-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+.os-rise {
+  animation: os-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Progress fill for the shot player's active step. */
+@keyframes os-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes os-trace {
+  from { stroke-dashoffset: 1200; }
+  to   { stroke-dashoffset: 0; }
+}
+.os-trace {
+  stroke-dasharray: 1200;
+  animation: os-trace 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-rise,
+  .os-trace {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ---------- MDX prose ---------- */
+
+.prose-app {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--os-text);
+  /* Docs prose contains slash-joined lists
+     ("name/method/basis/solvent/keywords/submitter") and long identifiers
+     (DFTSTREAM_TRACKER_URL, _IRC_Full_trj.xyz) that no browser breaks on
+     its own. Fenced blocks keep their own horizontal scroll below, so code
+     stays verbatim. */
+  overflow-wrap: break-word;
+}
+.prose-app h1 {
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 1.1rem;
+  color: var(--os-text);
+}
+.prose-app h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 2.4rem 0 0.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--os-border-light);
+  color: var(--os-text);
+}
+.prose-app h3 {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 1.9rem 0 0.55rem;
+  color: var(--os-text-faint);
+}
+.prose-app p,
+.prose-app ul,
+.prose-app ol,
+.prose-app table {
+  margin-bottom: 1rem;
+}
+.prose-app ul,
+.prose-app ol {
+  padding-left: 1.2rem;
+}
+.prose-app li {
+  margin-bottom: 0.3rem;
+}
+.prose-app ul li {
+  list-style: none;
+  position: relative;
+}
+.prose-app ul li::before {
+  content: "";
+  position: absolute;
+  left: -0.95rem;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(var(--os-accent-rgb), 0.6);
+}
+.prose-app ol li {
+  list-style: decimal;
+}
+.prose-app a {
+  color: var(--os-accent);
+  text-underline-offset: 3px;
+  text-decoration: underline;
+}
+.prose-app strong {
+  color: var(--os-text);
+  font-weight: 600;
+}
+.prose-app code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--os-card-bg-deep);
+  border: 1px solid var(--os-border-light);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+.prose-app pre {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  background: var(--os-card-bg-deep);
+  border: 1px solid var(--os-border-light);
+  border-radius: 8px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.2rem;
+}
+.prose-app pre code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+/* Tables live inside a scroll container (see components/mdx.tsx) so the table
+   itself can stay `display: table` and distribute its columns. */
+.prose-app-table {
+  overflow-x: auto;
+  border: 1px solid var(--os-border-light);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.prose-app table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+.prose-app th,
+.prose-app td {
+  padding: 0.55rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--os-border-light);
+}
+.prose-app tbody tr:last-child td {
+  border-bottom: none;
+}
+.prose-app th {
+  background: var(--os-table-head-bg);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--os-text-muted);
+  white-space: nowrap;
+}
+.prose-app blockquote {
+  border-left: 3px solid rgba(var(--os-accent-rgb), 0.5);
+  background: rgba(var(--os-accent-rgb), 0.05);
+  border-radius: 0 8px 8px 0;
+  padding: 0.6rem 1rem;
+  color: var(--os-text-muted);
+}
+.prose-app blockquote p:last-child {
+  margin-bottom: 0;
+}
+.prose-app hr {
+  border: 0;
+  border-top: 1px solid var(--os-border-light);
+  margin: 2rem 0;
+}

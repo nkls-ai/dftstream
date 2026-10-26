@@ -1,0 +1,25 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+----------
+ TIMINGS
+----------
+For the individual parts of the NEB, NEB-CI or NEB-TS run:
+Total                                  ...     4799.796 sec
+NEB                                    ...     4799.796 sec  100.0%
+[file orca_main/run.cpp, line 1547]: ORCA finished with error return - aborting the run

@@ -1,0 +1,44 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+                        ----------------------------
+                                    D-I-I-S
+                        ----------------------------
+  Iteration    Energy (Eh)           Delta-E    RMSDP     MaxDP     DIISErr   Damp  Time(sec)
+    1    -75.9500000000000000     0.00e+00  3.77e-03  7.50e-02  1.45e-01  0.700   2.1
+    2    -75.9550000000000000    -5.00e-03  1.20e-03  2.10e-02  4.50e-02  0.700   2.0
+
+                               WAVEFUNCTION STABILITY ANALYSIS
+
+The stability analysis indicates that the wavefunction is unstable
+Restart requested: Orbitals will be transformed and reconvergence attempted
+Orbitals have been transformed and reconvergence is now attempted
+
+                        ----------------------------
+                                    D-I-I-S
+                        ----------------------------
+  Iteration    Energy (Eh)           Delta-E    RMSDP     MaxDP     DIISErr   Damp  Time(sec)
+    1    -75.9500000000000000     0.00e+00  3.77e-03  7.50e-02  1.45e-01  0.700   2.1
+    2    -75.9550000000000000    -5.00e-03  1.20e-03  2.10e-02  4.50e-02  0.700   2.0
+
+The stability analysis shows that the wavefunction is stable
+
+FINAL SINGLE POINT ENERGY      -75.960000000000
+
+                             ****ORCA TERMINATED NORMALLY****
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 12 seconds 500 msec

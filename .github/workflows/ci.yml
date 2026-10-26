@@ -1,0 +1,181 @@
+# CI: build the UI bundle, run Go tests + vet, smoke-build the binary
+# on every push and PR targeting main. Also runs a multi-platform
+# cross-compile to catch GOOS/GOARCH regressions before tagging.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (linux/amd64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: wrapper/go.mod
+          cache-dependency-path: wrapper/go.sum
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install UI dependencies
+        working-directory: ui
+        run: bun install --frozen-lockfile
+
+      - name: Install Convex dependencies
+        # The UI bundle imports @db/api, which resolves to
+        # db/convex/_generated/api.js. That file in turn imports
+        # `convex/server`, so the db/ workspace also needs its
+        # node_modules populated before `bun build` runs.
+        working-directory: db
+        run: bun install --frozen-lockfile
+
+      - name: Build UI bundle
+        working-directory: wrapper
+        run: make ui-build
+
+      - name: Go vet
+        working-directory: wrapper
+        run: go vet ./...
+
+      - name: Go test
+        working-directory: wrapper
+        env:
+          # Corpus fixtures are tracked in the repo; a missing one in CI
+          # is a broken checkout, not a reason to skip the regression
+          # corpus. See wrapper/internal/parser/corpus_test.go.
+          DFTSTREAM_REQUIRE_CORPUS: '1'
+        run: go test ./...
+
+      - name: Build binary (with stamps)
+        working-directory: wrapper
+        run: make build
+
+      - name: Smoke test --version
+        working-directory: wrapper
+        run: ./bin/dftstream version
+
+  db-test:
+    name: DB tests (vitest + convex-test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Convex dependencies
+        working-directory: db
+        run: bun install --frozen-lockfile
+
+      - name: Run db test suite
+        # vitest over convex-test — pure in-memory, no live Convex
+        # backend needed.
+        working-directory: db
+        run: bun run test
+
+  ui-test:
+    name: UI tests (bun test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install UI dependencies
+        working-directory: ui
+        run: bun install --frozen-lockfile
+
+      - name: Install Convex dependencies
+        # ui/ imports @db/api which transitively imports convex/server
+        # from db/node_modules, so the db workspace must be installed.
+        working-directory: db
+        run: bun install --frozen-lockfile
+
+      - name: Run UI test suite
+        working-directory: ui
+        run: bun test
+
+  cross-build:
+    name: Cross-compile (${{ matrix.goos }}/${{ matrix.goarch }})
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+          - goos: windows
+            goarch: amd64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: wrapper/go.mod
+          cache-dependency-path: wrapper/go.sum
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install UI dependencies
+        working-directory: ui
+        run: bun install --frozen-lockfile
+
+      - name: Install Convex dependencies
+        # The UI bundle imports @db/api, which resolves to
+        # db/convex/_generated/api.js. That file in turn imports
+        # `convex/server`, so the db/ workspace also needs its
+        # node_modules populated before `bun build` runs.
+        working-directory: db
+        run: bun install --frozen-lockfile
+
+      - name: Build UI bundle
+        working-directory: wrapper
+        run: make ui-build
+
+      - name: Cross-compile
+        working-directory: wrapper
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: '0'
+        run: |
+          mkdir -p bin
+          ext=""
+          if [ "$GOOS" = "windows" ]; then ext=".exe"; fi
+          go build -trimpath -ldflags '-s -w' \
+            -o "bin/dftstream-${GOOS}-${GOARCH}${ext}" \
+            ./cmd/dftstream
+          ls -lh "bin/dftstream-${GOOS}-${GOARCH}${ext}"

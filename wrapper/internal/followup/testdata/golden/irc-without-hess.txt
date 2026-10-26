@@ -1,0 +1,11 @@
+=== file: ts_nohess_irc.inp ===
+# dftstream: edge=irc parent="goldenexp/ts_nohess"
+! wB97X-D4 def2-TZVP SMD(Acetonitrile) IRC
+%maxcore 4000
+* xyz 1 1
+C       0.10000000     0.00000000     0.00000000
+N       0.00000000     0.10000000     1.16000000
+H       0.50000000     0.50000000     0.00000000
+*
+=== end ===
+=== warning: no sibling .hess found — ORCA will compute a fresh Hessian before the IRC (expensive); rerun the TS with Freq to produce one

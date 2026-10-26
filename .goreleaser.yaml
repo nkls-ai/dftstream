@@ -1,0 +1,149 @@
+# GoReleaser configuration. Run via `goreleaser release --clean` on
+# the Release workflow (.github/workflows/release.yml). The UI bundle
+# is built ahead of time by the workflow; we double-check it exists in
+# the before hook so a local `goreleaser build --single-target` still
+# fails fast if someone forgot to run `make ui-build`.
+#
+# Docs: https://goreleaser.com
+version: 2
+
+project_name: dftstream
+
+before:
+  hooks:
+    - bash -c 'test -f wrapper/internal/uiserver/dist/index.html || (echo "UI bundle missing — run `make -C wrapper ui-build` first" >&2; exit 1)'
+    - bash -c 'cd wrapper && go mod download'
+
+builds:
+  - id: dftstream
+    main: ./cmd/dftstream
+    dir: ./wrapper
+    binary: dftstream
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/nkls-ai/dftstream/internal/version.Version={{ .Version }}
+      - -X github.com/nkls-ai/dftstream/internal/version.Commit={{ .ShortCommit }}
+      - -X github.com/nkls-ai/dftstream/internal/version.Date={{ .Date }}
+
+archives:
+  - id: default
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE*
+      - README.md
+      - scripts/install.sh
+
+checksum:
+  name_template: 'checksums.txt'
+
+# Homebrew tap (macOS only — Linux users use scripts/install.sh).
+# goreleaser v2.10+ deprecated `brews:` for binary distribution in
+# favour of `homebrew_casks:`; release.yml pins `~> v2`, which resolves
+# to a cask-capable version.
+#
+# Requirements (details in packaging/README.md):
+#   - the tap repo github.com/nkls-ai/homebrew-dftstream must exist,
+#   - the release workflow must export HOMEBREW_TAP_GITHUB_TOKEN, a
+#     token with contents:write on that repo.
+# When the env var is empty/unset the upload is skipped, so releases
+# keep working before the tap is set up.
+homebrew_casks:
+  - name: dftstream
+    repository:
+      owner: nkls-ai
+      name: homebrew-dftstream
+      token: '{{ index .Env "HOMEBREW_TAP_GITHUB_TOKEN" }}'
+    directory: Casks
+    homepage: https://github.com/nkls-ai/dftstream
+    description: Run wrapper and live tracker for ORCA quantum chemistry jobs
+    commit_msg_template: 'Cask update for {{ .ProjectName }} version {{ .Tag }}'
+    skip_upload: '{{ if index .Env "HOMEBREW_TAP_GITHUB_TOKEN" }}false{{ else }}true{{ end }}'
+    # Release binaries are not notarized; strip the quarantine bit so
+    # Gatekeeper does not block the cask-installed binary.
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/dftstream"]
+          end
+
+# Docker image: distroless static + the linux binary (which embeds the
+# UI bundle), entrypoint `dftstream`. Built during release so a broken
+# Dockerfile fails the release, but NOT pushed — no registry has been
+# decided yet (see packaging/README.md). To publish: flip skip_push to
+# "false" and add a ghcr.io login step + packages:write permission in
+# release.yml.
+#
+# `goreleaser check` notes that classic `dockers` is being phased out in
+# favour of `dockers_v2` (buildx-based). Migrate when we start actually
+# pushing images: https://goreleaser.com/deprecations#dockers
+dockers:
+  - id: dftstream
+    goos: linux
+    goarch: amd64
+    dockerfile: packaging/docker/Dockerfile
+    image_templates:
+      - 'ghcr.io/nkls-ai/dftstream:{{ .Version }}'
+      - 'ghcr.io/nkls-ai/dftstream:latest'
+    skip_push: "true"
+    build_flag_templates:
+      - '--label=org.opencontainers.image.title={{ .ProjectName }}'
+      - '--label=org.opencontainers.image.version={{ .Version }}'
+      - '--label=org.opencontainers.image.revision={{ .FullCommit }}'
+      - '--label=org.opencontainers.image.source=https://github.com/nkls-ai/dftstream'
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  use: github
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\(.+\))?!?:.+$'
+      order: 0
+    - title: Bug fixes
+      regexp: '^.*?fix(\(.+\))?!?:.+$'
+      order: 1
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+
+release:
+  draft: false
+  prerelease: auto
+  header: |
+    ## DFTStream {{ .Tag }}
+
+    Download the binary for your platform from the assets below, drop
+    it on your $PATH, and run `dftstream --help`.
+  footer: |
+    ---
+    **Quick install** (linux/macos):
+    ```sh
+    curl -fsSL https://raw.githubusercontent.com/nkls-ai/dftstream/{{ .Tag }}/scripts/install.sh | bash
+    ```

@@ -1,0 +1,22 @@
+                                 *****************
+                                 * O   R   C   A *
+                                 *****************
+
+                         Program Version 6.1.0  -  RELEASE  -
+
+================================================================================
+                                       INPUT FILE
+================================================================================
+NAME = job.inp
+|  1> ! r2SCAN-3c Opt
+|  2> %maxcore 4000
+|  3> # note: the last attempt died with not enough memory, retrying
+|  4> * xyz 0 1
+|  5> O 0.0 0.0 0.0
+|  6> *
+|  7>                          ****END OF INPUT****
+================================================================================
+                 *****************************************************************
+                 ** There are no main   basis functions on atom number  14 (I ) **
+                 *****************************************************************
+[file orca_main/main_input_geom_basis.cpp, line 2466]:    The basis set was either not assigned or not available for this element - Aborting the run

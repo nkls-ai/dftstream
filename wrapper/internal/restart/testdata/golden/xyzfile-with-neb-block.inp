@@ -1,0 +1,8 @@
+! XTB NEB-TS Freq
+%pal nprocs 16 end
+%maxcore 2000
+%neb
+  NEB_End_XYZFile "p.xyz"
+  Nimages 8
+end
+* xyzfile 0 1 r.xyz

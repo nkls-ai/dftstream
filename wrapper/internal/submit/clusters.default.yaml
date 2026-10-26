@@ -1,0 +1,119 @@
+# Cluster definitions for `dftstream submit`.
+#
+# This built-in file is a template. The paths and partition names below are
+# examples, so `dftstream submit -submit` refuses to queue jobs until you have
+# your own copy:
+#
+#   dftstream submit -print-config > ~/.config/dftstream/clusters.yaml
+#
+# Then edit every value marked EDIT. Lookup order: -config flag,
+# $DFTSTREAM_CLUSTERS, ./clusters.yaml, ~/.config/dftstream/clusters.yaml,
+# then this built-in.
+#
+# Every string under `scratch:` and `env:` is written verbatim into the
+# generated shell script, so $USER and other shell variables work.
+
+default_cluster: example
+
+clusters:
+  # ------------------------------------------------------------ example
+  # ORCA installed under a shared path, node-local /tmp as scratch, no
+  # environment modules.
+  - name: example
+    description: SLURM cluster with a shared ORCA install and node-local /tmp scratch
+    scheduler: slurm
+    tasks_directive: ntasks
+    # EDIT: absolute path to the orca binary. ORCA needs the full path to
+    # run in parallel.
+    orca_binary: /path/to/orca
+    # EDIT: path to dftstream on the compute nodes, or just `dftstream` if
+    # it is on their PATH.
+    dftstream_binary: /path/to/dftstream
+    # Passed to ORCA as its second argument; ORCA forwards it to mpirun.
+    orca_args:
+      - "--bind-to none"
+    # Where job directories are created, relative to the directory the
+    # inputs are submitted from (absolute paths are also accepted).
+    jobs_dir: ../jobs
+    scratch:
+      base: /tmp
+      layout: name-jobid
+      clean_globs:
+        - "*tmp*"
+      copy_back_globs:
+        - "*"
+    stream:
+      artifacts: essential
+      orbitals: none
+    # Set true when this cluster's compute nodes cannot reach the tracking
+    # backend (only the login nodes can). Streamed jobs then journal locally
+    # (DFTSTREAM_OFFLINE=1) and chain a best-effort `dftstream sync` after
+    # ORCA; run `dftstream sync` from a login node to upload what remains.
+    # compute_nodes_offline: true
+    default_profile: cpu
+    array_profile: array
+    # EDIT: partitions and walltimes (`sinfo -s` lists the partitions).
+    profiles:
+      - name: cpu
+        partition: cpu
+        # Leaves out --partition, so SLURM uses the cluster's default queue.
+        omit_partition: true
+        walltime: "24:00:00"
+      - name: long
+        partition: cpu
+        omit_partition: true
+        walltime: "72:00:00"
+      - name: express
+        partition: express
+        # Some short queues reject a walltime request; empty emits none.
+        walltime: ""
+      - name: array
+        partition: cpu
+        walltime: "48:00:00"
+        array_throttle: 30
+        # Array jobs fan out over dozens of tasks into one directory;
+        # copying every scratch file back would bury the results. .hess
+        # is kept because a TS restart cannot be built without it.
+        copy_back_globs:
+          - "*.out"
+          - "*.xyz"
+          - "*.hess"
+
+  # ------------------------------------------------------------ modules
+  # HPC system where ORCA comes from environment modules, scratch lives on
+  # a separate filesystem and the scheduler wants tasks per node.
+  - name: modules
+    description: HPC cluster with module-provided ORCA and a /scratch filesystem
+    scheduler: slurm
+    tasks_directive: ntasks-per-node
+    # EDIT: full path of orca after the modules below are loaded
+    # (`module load ...; which orca`).
+    orca_binary: /path/to/modules/ORCA/bin/orca
+    dftstream_binary: dftstream
+    orca_args: []
+    jobs_dir: ../jobs
+    # EDIT: one `module load` line each (`module avail ORCA`).
+    modules:
+      - GCC/13.3.0  OpenMPI/5.0.3
+      - ORCA/6.1.1
+    scratch:
+      # EDIT: your scratch filesystem.
+      base: /scratch/$USER
+      layout: name-jobid
+      clean_globs:
+        - "*tmp*"
+        - "*pro*"
+      copy_back_globs:
+        - "*"
+    stream:
+      artifacts: essential
+      orbitals: none
+    default_profile: normal
+    array_profile: normal
+    profiles:
+      - name: normal
+        partition: normal
+        walltime: "24:00:00"
+      - name: long
+        partition: long
+        walltime: "72:00:00"
